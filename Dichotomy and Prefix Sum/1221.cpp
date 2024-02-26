@@ -1,60 +1,63 @@
+#include<cstdio>
 #include<iostream>
-#include<cstring>
-#include <climits>
-using namespace std;
-const int N = 4;
-long long ans[N],backup[N];
-void printAns(){
-    for (int i = 0; i < 4;++i){
-        printf("%lld ", ans[i]);
-    }
-    puts("");
-}
-void printBackup(){
-    for (int i = 0; i < 4;++i){
-        printf("%lld ", backup[i]);
-    }
-    puts("");
-}
-long long findV(long long n,long long l, long long r){
-    while(l<r){
-        long long mid = l + r +  1 >> 1;
-        if(mid*mid<=n){
-            l = mid;
+#include<algorithm>
+#include<cmath>
+const int N = 5000000;
+struct Dir{
+    int s, c, d;
+    bool operator<(const Dir&t){
+        if(s<t.s){
+            return true;
+        }
+        else if(s==t.s&&c<t.c){
+            return true;
+        }
+        else if(s==t.s&&c==t.c&&d<t.d){
+            return true;
         }
         else{
-            r = mid = 1;
+            return false;
         }
     }
-    return l;
-}
-bool isSuccess(int n){
-    if(ans[0]*ans[0]+ans[1]*ans[1]+ans[2]*ans[2]+ans[3]*ans[3]==n){
-        return true;
-    }
-    else{
-        return false;
-    }
-}
+}sum[N];
+int n, m;
+using namespace std;
 int main(){
-    long long n;
-
-    scanf("%lld", &n);
-    long long s = n;
-    ans[N - 1] = findV(n, 0, n - 1);
-    if(isSuccess(n)){
-       printAns();
-    }
-    else{
-        for (long long i = ans[N - 1] - 1; i >= 0; --i)
-        {
-            n = s;
-            n -= i * i;
-            ans[N - 2] = findV(n, 0, n - 1);
-            if(isSuccess(s)){
-                printAns();
-            }
+    
+    scanf("%d", &n);
+    for (int c = 0; c * c <= n;++c){
+        for (int d = c; c * c + d * d <= n;++d){
+            sum[m].s = n - c * c - d * d;
+            sum[m].c = c;
+            sum[m].d = d;
+            ++m;
         }
     }
+    sort(sum, sum + m);
+    // for (int i = 0; i < m;++i){
+    //     printf("%d %d %d\n", sum[i].s, sum[i].c, sum[i].d);
+    // }
+    for (int a = 0; a * a <= n; ++a){
+        for (int b = a; a * a + b * b <= n; ++b){
+                int l = 0;
+                int r = m - 1;
+                int t = a * a + b * b;
+                while (l < r){
+                    int mid = l + r >> 1;
+                    if (sum[mid].s>=t){
+                        r = mid;
+                    }
+                    else{
+                        l = mid + 1;
+                   }
+                }
+                if(t+sum[l].c*sum[l].c+sum[l].d*sum[l].d==n){
+                        printf("%d %d %d %d\n", a, b, sum[l].c, sum[l].d);
+                        return 0;
+                }
+
+        }
+    }
+
     return 0;
 }
